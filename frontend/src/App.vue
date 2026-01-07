@@ -3,7 +3,7 @@
     <!-- 侧边栏 Sidebar -->
     <aside class="layout-sidebar">
       <div class="logo-area">
-        <img src="/logo-banner.png" alt="众智 - 灵感一触即发" class="logo-icon" />
+        <span class="logo-text">众智</span>
       </div>
       
       <nav class="nav-menu">
