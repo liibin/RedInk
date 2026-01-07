@@ -39,8 +39,9 @@ def create_content_blueprint():
             data = request.get_json()
             topic = data.get('topic', '')
             outline = data.get('outline', '')
+            platform = 'wechat'  # 固定使用公众号平台
 
-            log_request('/content', {'topic': topic[:50] if topic else '', 'outline_length': len(outline)})
+            log_request('/content', {'topic': topic[:50] if topic else '', 'outline_length': len(outline), 'platform': platform})
 
             # 验证必填参数
             if not topic:
@@ -58,9 +59,9 @@ def create_content_blueprint():
                 }), 400
 
             # 调用内容生成服务
-            logger.info(f"🔄 开始生成内容，主题: {topic[:50]}...")
-            content_service = get_content_service()
-            result = content_service.generate_content(topic, outline)
+            logger.info(f"🔄 开始生成内容，主题: {topic[:50]}..., 平台: {platform}")
+            content_service = get_content_service(platform=platform)
+            result = content_service.generate_content(topic, outline, platform)
 
             # 记录结果
             elapsed = time.time() - start_time

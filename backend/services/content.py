@@ -1,7 +1,7 @@
 """
 内容生成服务
 
-生成小红书风格的标题、文案和标签
+生成微信公众号风格的标题、文案和标签
 """
 
 import json
@@ -19,12 +19,13 @@ logger = logging.getLogger(__name__)
 class ContentService:
     """内容生成服务：生成标题、文案、标签"""
 
-    def __init__(self):
+    def __init__(self, platform: str = "wechat"):
         logger.debug("初始化 ContentService...")
         self.text_config = self._load_text_config()
         self.client = self._get_client()
-        self.prompt_template = self._load_prompt_template()
-        logger.info(f"ContentService 初始化完成，使用服务商: {self.text_config.get('active_provider')}")
+        self.platform = platform
+        self.prompt_template = self._load_prompt_template(platform=platform)
+        logger.info(f"ContentService 初始化完成，使用服务商: {self.text_config.get('active_provider')}, 平台: {platform}")
 
     def _load_text_config(self) -> dict:
         """加载文本生成配置"""
@@ -93,12 +94,15 @@ class ContentService:
         logger.info(f"使用文本服务商: {active_provider} (type={provider_config.get('type')})")
         return get_text_chat_client(provider_config)
 
-    def _load_prompt_template(self) -> str:
+    def _load_prompt_template(self, platform: str = "wechat") -> str:
         """加载提示词模板"""
+        # 始终使用微信公众号风格的提示词文件
+        filename = "content_prompt.txt"
+            
         prompt_path = os.path.join(
             os.path.dirname(os.path.dirname(__file__)),
             "prompts",
-            "content_prompt.txt"
+            filename
         )
         with open(prompt_path, "r", encoding="utf-8") as f:
             return f.read()
@@ -134,7 +138,8 @@ class ContentService:
     def generate_content(
         self,
         topic: str,
-        outline: str
+        outline: str,
+        platform: str = "wechat"
     ) -> Dict[str, Any]:
         """
         生成标题、文案和标签
@@ -142,15 +147,17 @@ class ContentService:
         参数：
             topic: 用户输入的主题
             outline: 大纲内容
+            platform: 平台类型，支持 "wechat"
 
         返回：
             包含 titles, copywriting, tags 的字典
         """
         try:
-            logger.info(f"开始生成内容: topic={topic[:50]}...")
+            logger.info(f"开始生成内容: topic={topic[:50]}..., platform={platform}")
 
             # 构建提示词
-            prompt = self.prompt_template.format(
+            prompt_template = self._load_prompt_template(platform)
+            prompt = prompt_template.format(
                 topic=topic,
                 outline=outline
             )
@@ -242,9 +249,9 @@ class ContentService:
             }
 
 
-def get_content_service() -> ContentService:
+def get_content_service(platform: str = "wechat") -> ContentService:
     """
     获取内容生成服务实例
     每次调用都创建新实例以确保配置是最新的
     """
-    return ContentService()
+    return ContentService(platform=platform)

@@ -20,12 +20,13 @@ class ImageService:
     MAX_CONCURRENT = 15  # 最大并发数
     AUTO_RETRY_COUNT = 1  # 不自动重试，超时后让用户手动重试
 
-    def __init__(self, provider_name: str = None):
+    def __init__(self, provider_name: str = None, platform: str = "wechat"):
         """
         初始化图片生成服务
 
         Args:
             provider_name: 服务商名称，如果为None则使用配置文件中的激活服务商
+            platform: 平台类型，支持 "xiaohongshu" 和 "wechat"
         """
         logger.debug("初始化 ImageService...")
 
@@ -45,12 +46,15 @@ class ImageService:
         self.provider_name = provider_name
         self.provider_config = provider_config
 
+        # 保存平台信息
+        self.platform = platform
+        
         # 检查是否启用短 prompt 模式
         self.use_short_prompt = provider_config.get('short_prompt', False)
 
         # 加载提示词模板
-        self.prompt_template = self._load_prompt_template()
-        self.prompt_template_short = self._load_prompt_template(short=True)
+        self.prompt_template = self._load_prompt_template(platform=platform)
+        self.prompt_template_short = self._load_prompt_template(short=True, platform=platform)
 
         # 历史记录根目录
         self.history_root_dir = os.path.join(
@@ -67,17 +71,26 @@ class ImageService:
 
         logger.info(f"ImageService 初始化完成: provider={provider_name}, type={provider_type}")
 
-    def _load_prompt_template(self, short: bool = False) -> str:
+    def _load_prompt_template(self, short: bool = False, platform: str = "wechat") -> str:
         """加载 Prompt 模板"""
-        filename = "image_prompt_short.txt" if short else "image_prompt.txt"
+        if platform == "wechat":
+            filename = "image_prompt_wechat_short.txt" if short else "image_prompt_wechat.txt"
+        else:
+            filename = "image_prompt_short.txt" if short else "image_prompt.txt"
+            
         prompt_path = os.path.join(
             os.path.dirname(os.path.dirname(__file__)),
             "prompts",
             filename
         )
         if not os.path.exists(prompt_path):
-            # 如果短模板不存在，返回空字符串
-            return ""
+            # 如果平台特定模板不存在，回退到默认模板
+            fallback_filename = "image_prompt_short.txt" if short else "image_prompt.txt"
+            prompt_path = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                "prompts",
+                fallback_filename
+            )
         with open(prompt_path, "r", encoding="utf-8") as f:
             return f.read()
 
@@ -162,12 +175,20 @@ class ImageService:
                     user_topic=user_topic if user_topic else "未提供"
                 )
 
+            # 根据平台设置默认图片比例
+            if self.platform == "wechat":
+                default_aspect_ratio = '16:9'  # 微信公众号推荐比例
+                default_size = '1280x720'  # 16:9 对应尺寸
+            else:
+                default_aspect_ratio = '16:9'  # 微信公众号默认比例
+                default_size = '1024x1024'  # 默认尺寸
+            
             # 调用生成器生成图片
             if self.provider_config.get('type') == 'google_genai':
                 logger.debug(f"  使用 Google GenAI 生成器")
                 image_data = self.generator.generate_image(
                     prompt=prompt,
-                    aspect_ratio=self.provider_config.get('default_aspect_ratio', '3:4'),
+                    aspect_ratio=self.provider_config.get('default_aspect_ratio', default_aspect_ratio),
                     temperature=self.provider_config.get('temperature', 1.0),
                     model=self.provider_config.get('model', 'gemini-3-pro-image-preview'),
                     reference_image=reference_image,
@@ -184,7 +205,7 @@ class ImageService:
 
                 image_data = self.generator.generate_image(
                     prompt=prompt,
-                    aspect_ratio=self.provider_config.get('default_aspect_ratio', '3:4'),
+                    aspect_ratio=self.provider_config.get('default_aspect_ratio', default_aspect_ratio),
                     temperature=self.provider_config.get('temperature', 1.0),
                     model=self.provider_config.get('model', 'nano-banana-2'),
                     reference_images=reference_images if reference_images else None,
@@ -193,7 +214,7 @@ class ImageService:
                 logger.debug(f"  使用 OpenAI 兼容生成器")
                 image_data = self.generator.generate_image(
                     prompt=prompt,
-                    size=self.provider_config.get('default_size', '1024x1024'),
+                    size=self.provider_config.get('default_size', default_size),
                     model=self.provider_config.get('model'),
                     quality=self.provider_config.get('quality', 'standard'),
                 )
@@ -747,11 +768,11 @@ class ImageService:
 # 全局服务实例
 _service_instance = None
 
-def get_image_service() -> ImageService:
+def get_image_service(platform: str = "wechat") -> ImageService:
     """获取全局图片生成服务实例"""
     global _service_instance
-    if _service_instance is None:
-        _service_instance = ImageService()
+    if _service_instance is None or _service_instance.platform != platform:
+        _service_instance = ImageService(platform=platform)
     return _service_instance
 
 def reset_image_service():

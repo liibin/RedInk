@@ -3,7 +3,7 @@
     <div class="page-header">
       <div>
         <h1 class="page-title">创作完成</h1>
-        <p class="page-subtitle">恭喜！你的小红书图文已生成完毕，共 {{ store.images.length }} 张</p>
+        <p class="page-subtitle">恭喜！你的微信公众号图文已生成完毕，共 {{ store.images.length }} 张</p>
       </div>
       <div style="display: flex; gap: 12px;">
         <button class="btn" @click="startOver" style="background: white; border: 1px solid var(--border-color);">

@@ -1,24 +1,18 @@
 <div align="center">
 
-<img src="images/2.png" alt="红墨 - 灵感一触即发 让创作从未如此简单" width="600"/>
-
-## 红墨官方站点上线啦，注册即送50体验积分！
-
-## 注册需要邀请码！可以到 https://watcha.cn/square/discuss#post_id=1380 获取
-
-<div align="center">
-<a href="https://redink.top">
-  <img src="images/redink.png" alt="红墨在线体验" width="500" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"/>
-</a>
-
-#### [点击访问在线体验站 → Redink.top](https://redink.top)
-
+<img src="images/2.png" alt="众智 - 灵感一触即发 让创作从未如此简单" width="600"/>
 
 </div>
 
-<img src="images/showcase-grid.png" alt="使用红墨生成的各类小红书封面" width="700" style="border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);"/>
+---
 
-<sub>*使用红墨生成的各类小红书封面 - AI驱动，风格统一，文字准确*</sub>
+## ✨ 项目简介
+
+众智是一个专注于微信公众号图文内容生成的AI工具，通过输入主题即可智能生成完整的公众号图文内容，包括大纲、封面图和正文。
+
+<img src="images/showcase-grid.png" alt="使用众智生成的各类公众号封面" width="700" style="border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);"/>
+
+<sub>*使用众智生成的各类公众号封面 - AI驱动，风格统一，文字准确*</sub>
 
 </div>
 
@@ -50,7 +44,7 @@
 ![封面示例](./images/example-3.png)
 
 **封面亮点：**
-- 🎯 符合个人风格
+- 🎯 符合公众号风格
 - 📝 文字准确无误
 - 🌈 视觉统一协调
 
@@ -74,10 +68,6 @@
 
 ## 🏗️ 技术架构
 
-<table>
-<tr>
-<td width="50%" valign="top">
-
 ### 🔧 后端技术栈
 
 | 技术 | 说明 |
@@ -86,10 +76,11 @@
 | **框架** | Flask |
 | **包管理** | uv |
 | **文案AI** | Gemini 3 |
-| **图片AI** | 🍌 Nano banana Pro |
-
-</td>
-<td width="50%" valign="top">
+| **图片AI** | 第三方图片生成服务 |
+| **实时通信** | Server-Sent Events (SSE) |
+| **并发处理** | ThreadPoolExecutor |
+| **配置管理** | YAML |
+| **部署方式** | Docker/Docker Compose |
 
 ### 🎨 前端技术栈
 
@@ -98,15 +89,44 @@
 | **框架** | Vue 3 + TypeScript |
 | **构建工具** | Vite |
 | **状态管理** | Pinia |
+| **路由** | Vue Router |
+| **HTTP客户端** | Axios |
 | **样式** | Modern CSS |
+| **响应式设计** | 动态textarea高度调整 |
 
-</td>
-</tr>
-</table>
+### 📊 系统架构
+
+```
+┌───────────────────────────────────────────────────────────────────┐
+│                           前端应用                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌───────────────────────────┐ │
+│  │  主题输入   │  │  大纲生成   │  │  图片/内容生成与展示       │ │
+│  └─────────────┘  └─────────────┘  └───────────────────────────┘ │
+└────────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+┌───────────────────────────────────────────────────────────────────┐
+│                           后端服务                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌───────────────────────────┐ │
+│  │  路由管理   │  │  服务层     │  │  AI接口集成               │ │
+│  └─────────────┘  └─────────────┘  └───────────────────────────┘ │
+│  ┌─────────────┐  ┌─────────────┐  ┌───────────────────────────┐ │
+│  │  配置管理   │  │  历史记录   │  │  并发任务处理             │ │
+│  └─────────────┘  └─────────────┘  └───────────────────────────┘ │
+└────────────────────────────┬─────────────────────────────────────┘
+                             │
+                             ▼
+┌───────────────────────────────────────────────────────────────────┐
+│                           AI服务                                 │
+│  ┌─────────────┐  ┌─────────────┐  ┌───────────────────────────┐ │
+│  │  Gemini     │  │  图片生成   │  │  提示模板管理             │ │
+│  └─────────────┘  └─────────────┘  └───────────────────────────┘ │
+└───────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 📦 如何自己部署
+## 📦 部署方式
 
 ### 方式一：Docker 部署（推荐）
 
@@ -120,7 +140,7 @@ docker run -d -p 12398:12398 -v ./history:/app/history -v ./output:/app/output h
 
 **使用 docker-compose（可选）：**
 
-下载 [docker-compose.yml](https://github.com/HisMax/RedInk/blob/main/docker-compose.yml) 后：
+下载 docker-compose.yml 后：
 
 ```bash
 docker-compose up -d
@@ -132,8 +152,6 @@ docker-compose up -d
 - 使用 `-v ./output:/app/output` 持久化生成的图片
 - 可选：挂载自定义配置文件 `-v ./text_providers.yaml:/app/text_providers.yaml`
 
----
-
 ### 方式二：本地开发部署
 
 **前置要求：**
@@ -144,8 +162,8 @@ docker-compose up -d
 
 ### 1. 克隆项目
 ```bash
-git clone https://github.com/HisMax/RedInk.git
-cd RedInk
+git clone https://github.com/HisMax/ZhongZhi.git
+cd ZhongZhi
 ```
 
 ### 2. 配置 API 服务
@@ -273,6 +291,10 @@ providers:
 2. **生成时间**:
    - 图片生成需要时间,请耐心等待（不要离开页面）
 
+3. **公众号适配**:
+   - 系统已默认适配微信公众号的图片比例（16:9/4:3）
+   - 文案生成采用专业的公众号风格，结构清晰、语言专业
+
 ---
 
 ## 🤝 参与贡献
@@ -280,79 +302,6 @@ providers:
 欢迎提交 Issue 和 Pull Request!
 
 如果这个项目对你有帮助,欢迎给个 Star ⭐
-
-
----
-
-## 更新日志
-
-### v1.4.1 (2025-12-29)
-- ✨ 新增一键启动脚本，支持 macOS/Linux/Windows
-- ✨ 新增文案生成功能，自动生成标题、正文和标签
-- 🔧 修复历史记录保存机制：大纲生成后立即保存，编辑时自动保存（300ms防抖）
-- 🔧 优化跳转逻辑：点击"开始生成"前强制保存未保存的修改
-- 🔧 统一启动脚本端口显示为 12398
-- 🔧 清理后端生成器未使用的重试装饰器代码
-- 🔧 修复前端 CSS 变量引用问题
-- 🔧 优化 checkHistoryExists 接口性能，使用专用端点
-- 🔧 规范 recordId 赋值方式，统一使用 setRecordId() 方法
-
-### v1.4.0 (2025-11-30)
-- 🏗️ 后端架构重构：拆分单体路由为模块化蓝图（history、images、generation、outline、config）
-- 🏗️ 前端组件重构：提取可复用组件（ImageGalleryModal、OutlineModal、ShowcaseBackground等）
-- ✨ 优化首页设计，移除冗余内容区块
-- ✨ 背景图片预加载和渐入动画，提升加载体验
-- ✨ 历史记录持久化支持（Docker部署）
-- 🔧 修复历史记录预览和大纲查看功能
-- 🔧 优化Modal组件可见性控制
-- 🧪 新增65个后端单元测试
-
-### v1.3.0 (2025-11-26)
-- ✨ 新增 Docker 支持，一键部署
-- ✨ 发布官方 Docker 镜像到 Docker Hub: `histonemax/redink`
-- 🔧 Flask 自动检测前端构建产物，支持单容器部署
-- 🔧 Docker 镜像内置空白配置模板，保护 API Key 安全
-- 📝 更新 README，添加 Docker 部署说明
-
-### v1.2.0 (2025-11-26)
-- ✨ 新增版权信息展示，所有页面显示开源协议和项目链接
-- ✨ 优化图片重新生成功能，支持单张图片重绘
-- ✨ 重新生成图片时保持风格一致，传递完整上下文（封面图、大纲、用户输入）
-- ✨ 修复图片缓存问题，重新生成的图片立即刷新显示
-- ✨ 统一文本生成客户端接口，支持 Google Gemini 和 OpenAI 兼容接口自动切换
-- ✨ 新增 Web 界面配置功能，可视化管理 API 服务商
-- ✨ 新增高并发模式开关，适配不同 API 配额
-- ✨ API Key 脱敏显示，保护密钥安全
-- ✨ 配置自动保存，修改即时生效
-- 🔧 调整默认 max_output_tokens 为 8000，兼容更多模型限制
-- 🔧 优化前端路由和页面布局，提升用户体验
-- 🔧 简化配置文件结构，移除冗余参数
-- 🔧 优化历史记录图片显示，使用缩略图节省带宽
-- 🔧 历史记录重新生成时自动从文件系统加载封面图作为参考
-- 🐛 修复 `store.updateImage` 方法缺失导致的重新生成失败问题
-- 🐛 修复历史记录加载时图片 URL 拼接错误
-- 🐛 修复下载功能中原图参数处理问题
-- 🐛 修复图片加载 500 错误问题
-
----
-
-## 交流讨论与赞助
-
-- **GitHub Issues**: [https://github.com/HisMax/RedInk/issues](https://github.com/HisMax/RedInk/issues)
-
-### 联系作者
-
-- **Email**: histonemax@gmail.com
-- **微信**: Histone2024（添加请注明来意）
-- **GitHub**: [@HisMax](https://github.com/HisMax)
-
-### 用爱发电，如果可以，请默子喝一杯☕️咖啡吧
-
-<img src="images/coffee.jpg" alt="赞赏码" width="300"/>
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=HisMax/RedInk&type=Date)](https://star-history.com/#HisMax/RedInk&Date)
 
 ---
 
@@ -380,11 +329,7 @@ providers:
 - 作为 SaaS 服务运营
 - 其他盈利性用途
 
-**请联系作者获取商业授权：**
-- 📧 Email: histonemax@gmail.com
-- 💬 微信: Histone2024（请注明"商业授权咨询"）
-
-默子会根据你的具体使用场景提供灵活的商业授权方案。
+**请联系原作者获取商业授权**
 
 ---
 
@@ -399,21 +344,6 @@ providers:
 - [Google Gemini](https://ai.google.dev/) - 强大的文案生成能力
 - 图片生成服务提供商 - 惊艳的图片生成效果
 - [Linux.do](https://linux.do/) - 优秀的开发者社区
-
----
-
-## 👨‍💻 作者
-
-**默子 (Histone)** - AI 创业者 
-
-- 🏠 位置: 中国杭州
-- 🚀 状态: 创业中
-- 📧 Email: histonemax@gmail.com
-- 💬 微信: Histone2024 （私人微信不解答任何技术问题）
-- 🐙 GitHub: [@HisMax](https://github.com/HisMax)
-- 
-
-*"让 AI 帮我们做更有创造力的事"*
 
 ---
 

@@ -2,16 +2,16 @@
 chcp 65001 >nul 2>&1
 setlocal EnableDelayedExpansion
 
-:: 红墨 AI图文生成器 - Windows 启动脚本
+:: 众智 AI图文生成器 - Windows 启动脚本
 
-title 红墨 AI图文生成器
+title 众智 AI图文生成器
 
 cd /d "%~dp0\.."
 
 cls
 echo.
 echo ╔═══════════════════════════════════════════════╗
-echo ║     🪟 红墨 AI图文生成器 - Windows 版         ║
+echo ║     🪟 众智 AI图文生成器 - Windows 版         ║
 echo ╚═══════════════════════════════════════════════╝
 echo.
 
@@ -95,9 +95,9 @@ echo.
 
 :: 启动后端 (新窗口，蓝色背景)
 if %USE_UV% equ 1 (
-    start "红墨-后端-12398" cmd /k "color 1F && title 红墨 后端服务 [12398] && uv run python backend/app.py"
+    start "众智-后端-12398" cmd /k "color 1F && title 众智 后端服务 [12398] && uv run python backend/app.py"
 ) else (
-    start "红墨-后端-12398" cmd /k "color 1F && title 红墨 后端服务 [12398] && python backend/app.py"
+    start "众智-后端-12398" cmd /k "color 1F && title 众智 后端服务 [12398] && python backend/app.py"
 )
 
 :: 等待后端启动
@@ -106,7 +106,7 @@ timeout /t 3 /nobreak >nul
 
 :: 启动前端 (新窗口，绿色背景)
 cd frontend
-start "红墨-前端-5173" cmd /k "color 2F && title 红墨 前端服务 [5173] && %PKG_MANAGER% run dev"
+start "众智-前端-5173" cmd /k "color 2F && title 众智 前端服务 [5173] && %PKG_MANAGER% run dev"
 cd ..
 
 :: 等待前端启动

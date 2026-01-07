@@ -86,11 +86,14 @@ class OutlineService:
         logger.info(f"使用文本服务商: {active_provider} (type={provider_config.get('type')})")
         return get_text_chat_client(provider_config)
 
-    def _load_prompt_template(self) -> str:
+    def _load_prompt_template(self, platform: str = "wechat") -> str:
+        # 始终使用微信公众号风格的大纲提示词
+        prompt_file = "outline_prompt.txt"
+        
         prompt_path = os.path.join(
             os.path.dirname(os.path.dirname(__file__)),
             "prompts",
-            "outline_prompt.txt"
+            prompt_file
         )
         with open(prompt_path, "r", encoding="utf-8") as f:
             return f.read()
@@ -132,11 +135,13 @@ class OutlineService:
     def generate_outline(
         self,
         topic: str,
-        images: Optional[List[bytes]] = None
+        images: Optional[List[bytes]] = None,
+        platform: str = "wechat"
     ) -> Dict[str, Any]:
         try:
-            logger.info(f"开始生成大纲: topic={topic[:50]}..., images={len(images) if images else 0}")
-            prompt = self.prompt_template.format(topic=topic)
+            logger.info(f"开始生成大纲: topic={topic[:50]}..., images={len(images) if images else 0}, platform={platform}")
+            prompt_template = self._load_prompt_template(platform)
+            prompt = prompt_template.format(topic=topic)
 
             if images and len(images) > 0:
                 prompt += f"\n\n注意：用户提供了 {len(images)} 张参考图片，请在生成大纲时考虑这些图片的内容和风格。这些图片可能是产品图、个人照片或场景图，请根据图片内容来优化大纲，使生成的内容与图片相关联。"
