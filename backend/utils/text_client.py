@@ -48,14 +48,24 @@ class TextChatClient:
                 "解决方案：在系统设置页面编辑文本生成服务商，填写 API Key"
             )
 
-        self.base_url = (base_url or "https://api.openai.com").rstrip('/').rstrip('/v1')
+        self.base_url = (base_url or "https://api.openai.com").rstrip('/')
 
         # 支持自定义端点路径
         endpoint = endpoint_type or '/v1/chat/completions'
         # 确保端点以 / 开头
         if not endpoint.startswith('/'):
             endpoint = '/' + endpoint
-        self.chat_endpoint = f"{self.base_url}{endpoint}"
+        
+        # 处理可能的重复版本段
+        import re
+        base_url_has_version = re.search(r'/v\d+$', self.base_url)
+        endpoint_has_version = re.match(r'/v\d+/', endpoint)
+        
+        if base_url_has_version and endpoint_has_version:
+            endpoint_without_version = re.sub(r'^/v\d+/', '/', endpoint)
+            self.chat_endpoint = f"{self.base_url}{endpoint_without_version}"
+        else:
+            self.chat_endpoint = f"{self.base_url}{endpoint}"
 
     def _encode_image_to_base64(self, image_data: bytes) -> str:
         """将图片数据编码为 base64"""
