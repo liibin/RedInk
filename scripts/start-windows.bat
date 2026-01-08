@@ -43,23 +43,16 @@ if %ERRORLEVEL% equ 0 (
 )
 
 :: pnpm / npm
-where pnpm >nul 2>&1
+where npm >nul 2>&1
 if %ERRORLEVEL% equ 0 (
-    for /f "tokens=*" %%i in ('pnpm --version') do set PNPM_VER=%%i
-    echo   [OK] pnpm !PNPM_VER!
-    set PKG_MANAGER=pnpm
+    for /f "tokens=*" %%i in ('npm --version') do set NPM_VER=%%i
+    echo   [!] npm !NPM_VER! ^(建议: npm i -g pnpm^)
+    set PKG_MANAGER=npm
 ) else (
-    where npm >nul 2>&1
-    if %ERRORLEVEL% equ 0 (
-        for /f "tokens=*" %%i in ('npm --version') do set NPM_VER=%%i
-        echo   [!] npm !NPM_VER! ^(建议: npm i -g pnpm^)
-        set PKG_MANAGER=npm
-    ) else (
-        echo   [ERROR] Node.js 未安装！
-        echo           请从 https://nodejs.org/ 下载安装
-        pause
-        exit /b 1
-    )
+    echo   [ERROR] Node.js 未安装！
+    echo           请从 https://nodejs.org/ 下载安装
+    pause
+    exit /b 1
 )
 
 echo.
