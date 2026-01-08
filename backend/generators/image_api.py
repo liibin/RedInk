@@ -15,7 +15,7 @@ class ImageApiGenerator(ImageGeneratorBase):
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
         logger.debug("初始化 ImageApiGenerator...")
-        self.base_url = config.get('base_url', 'https://api.example.com').rstrip('/').rstrip('/v1')
+        self.base_url = config.get('base_url', 'https://api.example.com').rstrip('/')
         self.model = config.get('model', 'default-model')
         self.default_aspect_ratio = config.get('default_aspect_ratio', '3:4')
         self.image_size = config.get('image_size', '4K')
@@ -146,7 +146,22 @@ class ImageApiGenerator(ImageGeneratorBase):
 4. 如果参考图中有人物或产品，可以适当融入"""
             payload["prompt"] = enhanced_prompt
 
-        api_url = f"{self.base_url}{self.endpoint_type}"
+        # 处理可能的重复路径段
+        # 检查base_url是否以版本号结尾（如 /v1, /v2, /api/v3）
+        import re
+        base_url_has_version = re.search(r'/v\d+$', self.base_url)
+        # 检查endpoint_type是否以版本号开头（如 /v1/, /v2/）
+        endpoint_has_version = re.match(r'/v\d+/', self.endpoint_type)
+        
+        api_url = self.base_url
+        if base_url_has_version and endpoint_has_version:
+            # 如果两者都有版本号，保留base_url的版本号，去掉endpoint_type的版本号
+            endpoint_without_version = re.sub(r'^/v\d+/', '/', self.endpoint_type)
+            api_url = f"{self.base_url}{endpoint_without_version}"
+        else:
+            # 否则直接拼接
+            api_url = f"{self.base_url}{self.endpoint_type}"
+        
         logger.debug(f"  发送请求到: {api_url}")
         response = requests.post(api_url, headers=headers, json=payload, timeout=300)
 
@@ -241,7 +256,22 @@ class ImageApiGenerator(ImageGeneratorBase):
             "temperature": 1.0
         }
 
-        api_url = f"{self.base_url}{self.endpoint_type}"
+        # 处理可能的重复路径段
+        # 检查base_url是否以版本号结尾（如 /v1, /v2, /api/v3）
+        import re
+        base_url_has_version = re.search(r'/v\d+$', self.base_url)
+        # 检查endpoint_type是否以版本号开头（如 /v1/, /v2/）
+        endpoint_has_version = re.match(r'/v\d+/', self.endpoint_type)
+        
+        api_url = self.base_url
+        if base_url_has_version and endpoint_has_version:
+            # 如果两者都有版本号，保留base_url的版本号，去掉endpoint_type的版本号
+            endpoint_without_version = re.sub(r'^/v\d+/', '/', self.endpoint_type)
+            api_url = f"{self.base_url}{endpoint_without_version}"
+        else:
+            # 否则直接拼接
+            api_url = f"{self.base_url}{self.endpoint_type}"
+        
         logger.info(f"Chat API 生成图片: {api_url}, model={model}")
 
         response = requests.post(api_url, headers=headers, json=payload, timeout=300)

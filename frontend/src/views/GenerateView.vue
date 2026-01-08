@@ -486,4 +486,8 @@ onMounted(async () => {
     transform: rotate(360deg);
   }
 }
+/* 覆盖grid-cols-4为单列布局 */
+.grid-cols-4 {
+  grid-template-columns: 1fr;
+}
 </style>

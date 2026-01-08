@@ -293,8 +293,8 @@ watch(
 /* 网格布局 */
 .outline-grid {
   display: grid;
-  /* 响应式列：最小宽度 280px，自动填充 */
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  /* 单列布局 */
+  grid-template-columns: 1fr;
   gap: 24px;
   max-width: 1400px;
   margin: 0 auto;

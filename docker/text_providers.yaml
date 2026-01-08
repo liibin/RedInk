@@ -3,9 +3,9 @@
 active_provider: default
 providers:
   default:
-    api_key: ""
-    base_url: https://api.openai.com/v1
-    max_output_tokens: 8000
-    model: gpt-4o
+    api_key: "sk-073a573ab5ca40eaa07f807a3ce53764"
+    base_url: https://api.deepseek.com/v1
+    max_output_tokens: 64000
+    model: deepseek-reasoner
     temperature: 1
     type: openai_compatible

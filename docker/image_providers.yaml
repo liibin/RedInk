@@ -3,8 +3,8 @@
 active_provider: default
 providers:
   default:
-    api_key: ""
-    base_url: https://api.openai.com/v1
+    api_key: "d48b6cb0-362b-40d6-bbde-9d2662d851a2"
+    base_url: https://ark.cn-beijing.volces.com/api/v3
     high_concurrency: false
-    model: dall-e-3
+    model: doubao-seedream-4-5-251128
     type: image_api

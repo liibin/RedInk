@@ -16,10 +16,36 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="view-toggle">
+      <button
+        class="toggle-btn"
+        :class="{ active: currentView === 'grid' }"
+        @click="currentView = 'grid'"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+        图片列表
+      </button>
+      <button
+        class="toggle-btn"
+        :class="{ active: currentView === 'preview' }"
+        @click="currentView = 'preview'"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+          <line x1="12" y1="18" x2="12" y2="18"></line>
+        </svg>
+        图文预览
+      </button>
+    </div>
+
+    <div v-if="currentView === 'grid'" class="card">
       <div class="grid-cols-4">
         <div v-for="image in store.images" :key="image.index" class="image-card group">
-          <!-- Image Area -->
           <div
             v-if="image.url"
             style="position: relative; aspect-ratio: 3/4; overflow: hidden; cursor: pointer;"
@@ -30,19 +56,14 @@
               :alt="`第 ${image.index + 1} 页`"
               style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;"
             />
-            <!-- Regenerating Overlay -->
             <div v-if="regeneratingIndex === image.index" style="position: absolute; inset: 0; background: rgba(255,255,255,0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10;">
                <div class="spinner" style="width: 24px; height: 24px; border-width: 2px; border-color: var(--primary); border-top-color: transparent;"></div>
                <span style="font-size: 12px; color: var(--primary); margin-top: 8px; font-weight: 600;">重绘中...</span>
             </div>
-
-            <!-- Hover Overlay -->
             <div v-else style="position: absolute; inset: 0; background: rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;" class="hover-overlay">
               预览大图
             </div>
           </div>
-
-          <!-- Action Bar -->
           <div style="padding: 12px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 12px; color: var(--text-sub);">Page {{ image.index + 1 }}</span>
             <div style="display: flex; gap: 8px;">
@@ -66,13 +87,48 @@
       </div>
     </div>
 
-    <!-- 标题、文案、标签生成区域 -->
+    <WeChatArticlePreview
+      v-if="currentView === 'preview'"
+      :pages="store.outline.pages"
+    />
+
     <ContentDisplay />
   </div>
 </template>
 
 <style scoped>
-/* 确保图片预览区域正确填充 */
+.view-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--border-color);
+  background: white;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.toggle-btn.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 .image-card > div:first-child {
   flex: 1;
   display: flex;
@@ -93,10 +149,12 @@ import { useRouter } from 'vue-router'
 import { useGeneratorStore } from '../stores/generator'
 import { regenerateImage } from '../api'
 import ContentDisplay from '../components/result/ContentDisplay.vue'
+import WeChatArticlePreview from '../components/result/WeChatArticlePreview.vue'
 
 const router = useRouter()
 const store = useGeneratorStore()
 const regeneratingIndex = ref<number | null>(null)
+const currentView = ref<'grid' | 'preview'>('grid')
 
 const viewImage = (url: string) => {
   const baseUrl = url.split('?')[0]
@@ -143,14 +201,12 @@ const handleRegenerate = async (image: any) => {
 
   regeneratingIndex.value = image.index
   try {
-    // Find the page content from outline
     const pageContent = store.outline.pages.find(p => p.index === image.index)
     if (!pageContent) {
        alert('无法找到对应页面的内容')
        return
     }
 
-    // 构建上下文信息
     const context = {
       fullOutline: store.outline.raw || '',
       userTopic: store.topic || ''

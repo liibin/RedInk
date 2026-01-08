@@ -33,7 +33,7 @@
         配置不成功？请检查API密钥配置或参考文档
       </div>
       <div class="footer-copyright">
-        © 2025 <a href="https://github.com/HisMax/ZhongZhi" target="_blank" rel="noopener noreferrer">众智</a> by 默子 (Histone)
+        © 2025 <a href="https://github.com/liibin/RedInk" target="_blank" rel="noopener noreferrer">众智</a>
       </div>
       <div class="footer-license">
         Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a>
